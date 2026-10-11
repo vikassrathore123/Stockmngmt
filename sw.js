@@ -1,5 +1,5 @@
 // Caches the app files so it opens with no internet. Never touches Google Script requests.
-const CACHE = 'artime-stock-v2';
+const CACHE = 'artime-stock-v3';
 const FILES = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
