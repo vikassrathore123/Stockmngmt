@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#14343b">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
@@ -11,107 +11,108 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Artime Stock</title>
 <style>
-:root{
-  --bg:#f2f5f6; --card:#ffffff; --ink:#14232b; --mute:#64767e; --line:#dde5e8;
-  --brand:#14343b; --in:#0f766e; --out:#b45309; --ok:#15803d; --low:#b45309; --bad:#b91c1c;
-  --chip:#e6edef;
-}
-@media (prefers-color-scheme:dark){
-  :root{--bg:#0e171b;--card:#16242a;--ink:#e8f0f2;--mute:#8ba0a8;--line:#24373e;--brand:#0b1f24;
-        --in:#2dd4bf;--out:#fbbf24;--ok:#4ade80;--low:#fbbf24;--bad:#f87171;--chip:#1d2f36}
+:root{color-scheme:light;
+  --bg:#ffffff; --surf:#f5f7f8; --line:#e4e9ec; --ink:#0f1c22; --mute:#667882;
+  --brand:#0f766e; --brand-t:#e3f4f2; --in:#0f766e; --out:#ea580c; --out-t:#fdeee3;
+  --ok:#16a34a; --low:#d97706; --bad:#dc2626;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-     display:flex;flex-direction:column;max-width:600px;margin:0 auto}
+html,body{margin:0;height:100%;background:var(--bg)}
+body{color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;max-width:720px;margin:0 auto}
 button,input,select{font:inherit;color:inherit}
-header{background:var(--brand);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
-       display:flex;align-items:center;justify-content:space-between;gap:12px}
-header h1{font-size:18px;margin:0;font-weight:650;letter-spacing:.2px}
-.pill{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:99px;padding:7px 13px;font-size:13px;min-height:34px}
-.pill.warn{background:#f59e0b;color:#2b1700}
-.pill.spin::before{content:"";display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:50%;
-  border:2px solid currentColor;border-right-color:transparent;animation:r .8s linear infinite;vertical-align:-1px}
+header{padding:calc(14px + env(safe-area-inset-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg)}
+header h1{font-size:22px;margin:0;font-weight:750;letter-spacing:-.3px}
+.pill{background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:13px;font-weight:600;min-height:38px}
+.pill.warn{background:#fff3e0;border-color:#fbd9a5;color:#8a4a00}
+.pill.ok::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:7px}
+.pill.spin::before{content:"";display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:r .8s linear infinite;vertical-align:-1px}
 @keyframes r{to{transform:rotate(360deg)}}
-#banner{background:#fef3c7;color:#5b3a00;font-size:13px;padding:8px 16px;border-bottom:1px solid #f5d98a}
-main{flex:1;overflow-y:auto;padding:12px 14px 90px}
+#banner{background:#fff7e6;color:#7a4b00;font-size:13px;padding:9px 18px;border-top:1px solid #fbe3b5;border-bottom:1px solid #fbe3b5}
+main{flex:1;overflow-y:auto;padding:6px 16px 110px}
 section[hidden]{display:none}
-.tools{position:sticky;top:-12px;background:var(--bg);padding:2px 0 10px;z-index:2}
-input[type=search],input[type=text],input[type=number],input[type=date],input[type=url],input[type=password],select{
-  width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px}
-.chips{display:flex;gap:8px;margin-top:8px}
-.chip{background:var(--chip);border:0;border-radius:99px;padding:7px 14px;font-size:14px}
-.chip[aria-pressed=true]{background:var(--brand);color:#fff}
-.grp{margin:14px 2px 6px;font-size:13px;color:var(--mute);font-weight:600}
-.row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
-     border-radius:10px;padding:12px 14px;margin-bottom:6px;min-height:52px}
-.row:active{background:var(--chip)}
-.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--line)}
-.dot.OK{background:var(--ok)}.dot.LOW{background:var(--low)}.dot.OUT{background:var(--bad)}
-.lbl{flex:1;min-width:0}
-.lbl b{font-weight:600}
-.lbl small{display:block;color:var(--mute);font-size:12px}
-.qty{font-variant-numeric:tabular-nums;font-size:19px;font-weight:650;text-align:right}
-.qty.OUT{color:var(--bad)}.qty.LOW{color:var(--low)}
-.qty small{font-size:12px;font-weight:400;color:var(--mute)}
-.qty i{display:block;font-style:normal;font-size:11px;font-weight:500;color:var(--mute)}
-.empty{text-align:center;color:var(--mute);padding:40px 20px}
-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--card);
-    border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
-nav button{flex:1;background:none;border:0;padding:12px 4px;font-size:14px;color:var(--mute);min-height:52px;position:relative}
-nav button[aria-current=page]{color:var(--ink);font-weight:650;box-shadow:inset 0 3px 0 var(--brand)}
-.badge-n{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;margin-left:6px}
-.log{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px}
-.sign{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
-.sign.in{background:color-mix(in srgb,var(--in) 18%,transparent);color:var(--in)}
-.sign.out{background:color-mix(in srgb,var(--out) 18%,transparent);color:var(--out)}
-.log .t{flex:1;min-width:0}
-.log .t b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.log .t span{font-size:12px;color:var(--mute)}
-.log .t em{display:block;font-size:12px;color:var(--bad);font-style:normal}
-.st{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--chip);color:var(--mute);white-space:nowrap}
-.st.pending{background:#fef3c7;color:#7a4b00}.st.error{background:#fee2e2;color:#991b1b}.st.synced{color:var(--ok)}
-.x{background:none;border:0;color:var(--mute);font-size:22px;padding:4px 8px;min-height:40px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.card h2{font-size:15px;margin:0 0 10px}
-.card label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
-.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600;min-height:48px;width:100%}
-.btn.alt{background:var(--chip);color:var(--ink)}
+.lab{display:block;font-size:13px;color:var(--mute);margin:20px 2px 8px;font-weight:650}
+.lab:first-child{margin-top:6px}
+input[type=search],input[type=text],input[type=number],input[type=date],input[type=url],input[type=password]{
+  width:100%;background:var(--surf);border:1.5px solid transparent;border-radius:14px;padding:13px 14px;min-height:50px}
+input:focus{outline:none;border-color:var(--brand);background:#fff}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surf);padding:5px;border-radius:16px}
+.seg button{border:0;background:transparent;border-radius:12px;padding:13px;font-weight:700;font-size:16px;min-height:50px;color:var(--mute)}
+.seg button[aria-pressed=true].in{background:var(--in);color:#fff;box-shadow:0 2px 8px rgba(15,118,110,.3)}
+.seg button[aria-pressed=true].out{background:var(--out);color:#fff;box-shadow:0 2px 8px rgba(234,88,12,.3)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;background:var(--surf);border:0;border-radius:99px;padding:10px 18px;font-weight:650;min-height:42px;color:var(--mute)}
+.cat[aria-pressed=true]{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+.tile{background:var(--surf);border:2px solid transparent;border-radius:16px;padding:14px;text-align:left;min-height:78px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.tile .tn{font-weight:650;font-size:15px;line-height:1.25}
+.tile .ts{font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.tile[aria-pressed=true]{background:var(--brand-t);border-color:var(--brand)}
+.d{width:8px;height:8px;border-radius:50%;background:#c9d3d8;flex:none}
+.d.OK{background:var(--ok)}.d.LOW{background:var(--low)}.d.OUT{background:var(--bad)}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.size{background:var(--surf);border:2px solid transparent;border-radius:14px;padding:9px 16px;min-height:54px;text-align:center}
+.size b{display:block;font-weight:700;font-size:16px}
+.size span{display:block;font-size:12px;color:var(--mute)}
+.size[aria-pressed=true]{background:var(--brand-t);border-color:var(--brand)}
+.sel{background:var(--surf);border-radius:16px;padding:14px 16px;margin-top:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.sel b{font-weight:700}.sel span{color:var(--mute);font-size:13px}
+.stp{display:grid;grid-template-columns:62px 1fr 62px;gap:8px}
+.stp button{border:0;background:var(--surf);border-radius:16px;font-size:28px;font-weight:600;min-height:64px}
+.stp button:active{background:var(--line)}
+#qty{font-size:32px;font-weight:750;text-align:center;font-variant-numeric:tabular-nums;min-height:64px;border-radius:16px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.quick button{border:0;background:var(--surf);border-radius:12px;padding:11px 0;font-weight:650;min-height:46px}
+.quick button:active{background:var(--line)}
+.after{text-align:center;font-size:14px;color:var(--mute);margin:10px 0 0;min-height:20px}
+.after.neg{color:var(--bad);font-weight:650}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{background:var(--surf);border:2px solid transparent;border-radius:99px;padding:9px 16px;min-height:44px}
+.opt[aria-pressed=true]{background:var(--brand-t);border-color:var(--brand);font-weight:650}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:16px;padding:14px 18px;font-weight:700;min-height:52px;width:100%}
+.btn.alt{background:var(--surf);color:var(--ink)}
+.btn.big{min-height:60px;font-size:18px;margin-top:22px}
+.btn.big.in{background:var(--in)}.btn.big.out{background:var(--out)}
 .btn:disabled{opacity:.55}
+.last{font-size:13px;color:var(--mute);text-align:center;margin-top:10px}
+.empty{background:var(--surf);border-radius:16px;padding:22px;text-align:center;color:var(--mute)}
+.empty .btn{margin-top:14px}
+.hd{font-size:13px;color:var(--mute);font-weight:700;margin:22px 4px 8px}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--bg);border:0;border-bottom:1px solid var(--line);padding:13px 4px;min-height:58px}
+.row:active{background:var(--surf)}
+.lbl{flex:1;min-width:0}.lbl b{font-weight:650}
+.lbl small{display:block;color:var(--mute);font-size:12px}
+.qtyc{font-variant-numeric:tabular-nums;font-size:19px;font-weight:700;text-align:right}
+.qtyc.OUT{color:var(--bad)}.qtyc.LOW{color:var(--low)}
+.qtyc small{font-size:12px;font-weight:500;color:var(--mute)}
+.qtyc i{display:block;font-style:normal;font-size:11px;font-weight:500;color:var(--mute)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:10px 0 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.log{display:flex;gap:12px;align-items:center;background:var(--surf);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.sign{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
+.sign.in{background:var(--brand-t);color:var(--in)}.sign.out{background:var(--out-t);color:var(--out)}
+.log .t{flex:1;min-width:0}
+.log .t b{font-weight:650;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log .t span{font-size:12.5px;color:var(--mute)}
+.log .t em{display:block;font-size:12.5px;color:var(--bad);font-style:normal}
+.st{font-size:12px;font-weight:650;padding:4px 10px;border-radius:99px;background:#fff;color:var(--mute);white-space:nowrap}
+.st.pending{background:#fff3e0;color:#8a4a00}.st.error{background:#fde8e8;color:#b91c1c}.st.synced{background:#e7f7ec;color:#15803d}
+.x{background:none;border:0;color:var(--mute);font-size:24px;padding:4px 8px;min-height:44px}
+.card{background:var(--surf);border-radius:18px;padding:16px;margin-bottom:12px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card label{display:block;font-size:13px;color:var(--mute);margin:12px 0 6px;font-weight:600}
+.card input{background:#fff;border-color:var(--line)}
 .msg{font-size:13px;margin-top:8px;color:var(--mute);min-height:18px}
 .msg.bad{color:var(--bad)}.msg.good{color:var(--ok)}
-.card.f{padding:14px 14px 16px}
-.lab{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px;font-weight:600}
-.lab:first-child{margin-top:0}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.seg button{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:13px;font-weight:700;font-size:17px;min-height:54px}
-.seg button[aria-pressed=true].in{background:var(--in);color:#fff;border-color:var(--in)}
-.seg button[aria-pressed=true].out{background:var(--out);color:#fff;border-color:var(--out)}
-@media (prefers-color-scheme:dark){.seg button[aria-pressed=true]{color:#06191c !important}}
-.chipbox{display:flex;flex-wrap:wrap;gap:8px}
-.pick{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 13px;font-size:15px;min-height:42px}
-.pick[aria-pressed=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
-.pick .d{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--line)}
-.pick .d.OK{background:var(--ok)}.pick .d.LOW{background:var(--low)}.pick .d.OUT{background:var(--bad)}
-.pick[aria-pressed=true] .d{box-shadow:0 0 0 1.5px #fff}
-.sel{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px}
-.sel b{font-weight:650}.sel span{color:var(--mute);font-size:13px}
-.stp{display:grid;grid-template-columns:56px 1fr 56px;gap:8px;align-items:stretch}
-.stp button{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;font-size:26px;font-weight:600;min-height:60px}
-#qty{font-size:30px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;min-height:60px}
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-.quick button{border:1.5px solid var(--line);background:var(--chip);border-radius:10px;padding:10px 0;font-weight:600;min-height:44px}
-.after{text-align:center;font-size:14px;color:var(--mute);margin:10px 0 0;min-height:20px}
-.after.neg{color:var(--bad);font-weight:600}
-.savebar{padding:2px 0 4px}
-.btn.big{min-height:56px;font-size:18px;border-radius:12px}
-.btn.big.in{background:var(--in)}.btn.big.out{background:var(--out)}
-@media (prefers-color-scheme:dark){.btn.big.in,.btn.big.out{color:#06191c}}
-.last{font-size:13px;color:var(--mute);text-align:center;margin-top:8px}
-.gear{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:99px;width:34px;height:34px;font-size:17px}
-.hdr-r{display:flex;gap:8px;align-items:center}
-#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#14232b;color:#fff;
-       padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90%;text-align:center}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:720px;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;font-size:12px;font-weight:600;color:var(--mute);min-height:58px;border-radius:14px;position:relative}
+nav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-current=page]{color:var(--brand)}
+nav button[aria-current=page]::before{content:"";position:absolute;top:2px;width:30px;height:3px;border-radius:3px;background:var(--brand)}
+.badge-n{position:absolute;top:3px;left:calc(50% + 8px);background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 6px;font-weight:700}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90%;text-align:center}
 #toast.on{opacity:1}
 :focus-visible{outline:3px solid #38bdf8;outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.pill.spin::before{animation:none}}
@@ -120,55 +121,51 @@ nav button[aria-current=page]{color:var(--ink);font-weight:650;box-shadow:inset 
 <body>
 <header>
   <h1>Artime Stock</h1>
-  <div class="hdr-r"><button id="syncBtn" class="pill" type="button">…</button><button id="gear" class="gear" type="button" aria-label="Settings">⚙</button></div>
+  <button id="syncBtn" class="pill" type="button">…</button>
 </header>
 <div id="banner" hidden></div>
 
 <main>
   <section id="tab-add">
-    <div class="card f">
-      <div class="seg" role="group" aria-label="Entry type">
-        <button type="button" class="in" data-t="in" aria-pressed="false">+ Stock in</button>
-        <button type="button" class="out" data-t="out" aria-pressed="true">− Stock out</button>
-      </div>
-      <span class="lab">Item</span>
-      <div id="itemChips" class="chipbox"></div>
-      <div id="sizeWrap" hidden>
-        <span class="lab">Size</span>
-        <div id="sizeChips" class="chipbox"></div>
-      </div>
-      <div id="selInfo" class="sel" hidden></div>
-      <span class="lab">Quantity</span>
-      <div class="stp">
-        <button id="minus" type="button" aria-label="Less">−</button>
-        <input id="qty" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
-        <button id="plus" type="button" aria-label="More">+</button>
-      </div>
-      <div class="quick">
-        <button type="button" data-add="1">+1</button><button type="button" data-add="10">+10</button>
-        <button type="button" data-add="50">+50</button><button type="button" data-add="100">+100</button>
-      </div>
-      <div class="after" id="after"></div>
-      <span class="lab" id="partyLbl">Used for</span>
-      <div id="usedChips" class="chipbox"></div>
-      <input id="party" type="text" autocomplete="off" placeholder="Supplier name (optional)" hidden>
-      <span class="lab">Date</span>
-      <input id="date" type="date">
-      <span class="lab">Note (optional)</span>
-      <input id="note" type="text" autocomplete="off">
+    <div class="seg" role="group" aria-label="Entry type">
+      <button type="button" class="in" data-t="in" aria-pressed="false">+ Stock in</button>
+      <button type="button" class="out" data-t="out" aria-pressed="true">− Stock out</button>
     </div>
-    <div class="savebar"><button id="save" class="btn big out" type="button">Save entry</button></div>
+    <span class="lab">1. Category</span>
+    <div id="catChips" class="cats"></div>
+    <span class="lab">2. Item</span>
+    <div id="itemGrid" class="grid"></div>
+    <div id="sizeWrap" hidden>
+      <span class="lab">3. Size</span>
+      <div id="sizeChips" class="sizes"></div>
+    </div>
+    <div id="selInfo" class="sel" hidden></div>
+    <span class="lab">Quantity</span>
+    <div class="stp">
+      <button id="minus" type="button" aria-label="Less">−</button>
+      <input id="qty" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+      <button id="plus" type="button" aria-label="More">+</button>
+    </div>
+    <div class="quick">
+      <button type="button" data-add="1">+1</button><button type="button" data-add="10">+10</button>
+      <button type="button" data-add="50">+50</button><button type="button" data-add="100">+100</button>
+    </div>
+    <div class="after" id="after"></div>
+    <span class="lab" id="partyLbl">Used for</span>
+    <div id="usedChips" class="opts"></div>
+    <input id="party" type="text" autocomplete="off" placeholder="Supplier name (optional)" hidden>
+    <span class="lab">Date</span>
+    <input id="date" type="date">
+    <span class="lab">Note (optional)</span>
+    <input id="note" type="text" autocomplete="off">
+    <button id="save" class="btn big out" type="button">Save entry</button>
     <div class="last" id="lastSaved"></div>
   </section>
 
   <section id="tab-stock" hidden>
-    <div class="tools">
-      <input id="q" type="search" placeholder="Search item, size or code" autocomplete="off">
-      <div class="chips">
-        <button class="chip" data-f="all" aria-pressed="true" type="button">All</button>
-        <button class="chip" data-f="low" aria-pressed="false" type="button">Needs reorder</button>
-      </div>
-    </div>
+    <span class="lab">Search</span>
+    <input id="q" type="search" placeholder="Item, size or code" autocomplete="off">
+    <div class="chips" id="stockChips"></div>
     <div id="list"></div>
   </section>
 
@@ -181,10 +178,10 @@ nav button[aria-current=page]{color:var(--ink);font-weight:650;box-shadow:inset 
       <h2>Connect to your sheet</h2>
       <div class="msg" id="pwHint"></div>
       <label for="cfgUrl">Web app link (ends with /exec)</label>
-      <input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+      <input id="cfgUrl" type="url" autocomplete="off">
       <label for="cfgTok">Password (SECRET from the script)</label>
       <input id="cfgTok" type="password" autocomplete="off">
-      <div style="height:12px"></div>
+      <div style="height:14px"></div>
       <button id="cfgSave" class="btn" type="button">Save and test</button>
       <div id="cfgMsg" class="msg"></div>
     </div>
@@ -200,44 +197,57 @@ nav button[aria-current=page]{color:var(--ink);font-weight:650;box-shadow:inset 
   </section>
 </main>
 
-<nav>
-  <button data-tab="add" aria-current="page" type="button">Add entry</button>
-  <button data-tab="stock" type="button">Stock</button>
-  <button data-tab="log" type="button">Entries<span id="navN" class="badge-n" hidden></span></button>
+<nav aria-label="Main">
+  <button data-tab="add" aria-current="page" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Add</button>
+  <button data-tab="stock" type="button"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Stock</button>
+  <button data-tab="log" type="button"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Entries<span id="navN" class="badge-n" hidden></span></button>
+  <button data-tab="set" type="button"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Settings</button>
 </nav>
-
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 'use strict';
-/* ================= State ================= */
+/* ================= Settings you can edit ================= */
 const KEY = 'artime.stock.v1';
-// Built in: your Google Apps Script web app link. DEFAULT_TOKEN: put your SECRET here to skip the one-time password step.
+// Your Google Apps Script web app link (built in).
 const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxGegpFMtdVyvICBaGGWiq0NoHBk4tdaHsouw-04S9Gwjl9XeDskCQ_9d3D1w8A0tgS/exec';
+// Put your SECRET here to skip the one-time password step on each phone (note: anyone who can read this file can then read it).
 const DEFAULT_TOKEN = '';
 const USED_FOR = ['Production','Online order','Offline sale','Damage / wastage','Other'];
+// Which item belongs to which category (edit freely; anything not listed goes under "Other").
+const CATEGORIES = [
+  {name:'Packing',     items:['Box (Offline)','Box (Online)','Thermacol','Kerosene','Panni','Tape','Leker','Antique Color','Battery']},
+  {name:'Clock items', items:['Clock Hands','PVC Ring','PVC Paper','Glass','Iron Ring','Machine','Iron Plate','Tikkla']}
+];
+// Built-in item list so the pickers work even before the first sync: [code, item, size, unit, min level]
+const DEFAULT_ITEMS = [["BOX-OFF-06","Box (Offline)","6 in","pcs",20.0],["BOX-OFF-08","Box (Offline)","8 in","pcs",20.0],["BOX-OFF-10","Box (Offline)","10 in","pcs",20.0],["BOX-OFF-12","Box (Offline)","12 in","pcs",20.0],["BOX-OFF-18","Box (Offline)","18 in","pcs",20.0],["BOX-ON-06","Box (Online)","6 in","pcs",20.0],["BOX-ON-08","Box (Online)","8 in","pcs",20.0],["BOX-ON-10","Box (Online)","10 in","pcs",20.0],["BOX-ON-12","Box (Online)","12 in","pcs",20.0],["BOX-ON-18","Box (Online)","18 in","pcs",20.0],["THM-06","Thermacol","6 in","pcs",20.0],["THM-08","Thermacol","8 in","pcs",20.0],["THM-10","Thermacol","10 in","pcs",20.0],["THM-12","Thermacol","12 in","pcs",20.0],["THM-18","Thermacol","18 in","pcs",20.0],["HND-06","Clock Hands","6 in","pcs",20.0],["HND-08","Clock Hands","8 in","pcs",20.0],["HND-10","Clock Hands","10 in","pcs",20.0],["HND-12-18","Clock Hands","12 & 18 in","pcs",20.0],["PVR-06","PVC Ring","6 in","pcs",20.0],["PVR-08","PVC Ring","8 in","pcs",20.0],["PVR-10","PVC Ring","10 in","pcs",20.0],["PVR-12-18","PVC Ring","12 & 18 in","pcs",20.0],["PVP-06","PVC Paper","6 in","pcs",20.0],["PVP-08","PVC Paper","8 in","pcs",20.0],["PVP-10","PVC Paper","10 in","pcs",20.0],["PVP-12-18","PVC Paper","12 & 18 in","pcs",20.0],["GLS-06","Glass","6 in","pcs",20.0],["GLS-08","Glass","8 in","pcs",20.0],["GLS-10","Glass","10 in","pcs",20.0],["GLS-12-18","Glass","12 & 18 in","pcs",20.0],["IRR-06","Iron Ring","6 in","pcs",20.0],["IRR-08","Iron Ring","8 in","pcs",20.0],["IRR-10","Iron Ring","10 in","pcs",20.0],["IRR-12-18","Iron Ring","12 & 18 in","pcs",20.0],["MCH-ALL","Machine","All sizes","pcs",20.0],["IRP-06","Iron Plate","6 in","pcs",20.0],["IRP-08","Iron Plate","8 in","pcs",20.0],["IRP-10","Iron Plate","10 in","pcs",20.0],["IRP-12-18","Iron Plate","12 & 18 in","pcs",20.0],["TIK-06","Tikkla","6 in","pcs",20.0],["TIK-08-18","Tikkla","8, 10, 12 & 18 in","pcs",20.0],["KER","Kerosene","n/a","litre",20.0],["PAN","Panni","n/a","pcs",20.0],["TAP","Tape","n/a","roll",20.0],["LEK","Leker","n/a","pcs",20.0],["ANT","Antique Color","n/a","pcs",20.0],["BAT","Battery","n/a","pcs",20.0]].map(r => ({code:r[0], item:r[1], size:r[2], unit:r[3], min:r[4], stock:0, status:'-'}));
 const SYNC_TIMEOUT_POST = 30000, SYNC_TIMEOUT_GET = 20000;
 
+/* ================= State ================= */
 function load(){
   try{
     const o = JSON.parse(localStorage.getItem(KEY));
-    if (o && Array.isArray(o.queue)) { o.cfg = o.cfg || {url:'',token:''}; o.items = o.items || []; return o; }
+    if (o && Array.isArray(o.queue)){
+      o.cfg = o.cfg || {url:'',token:''};
+      if (!o.items || !o.items.length){ o.items = DEFAULT_ITEMS; o.itemsAt = 0; }
+      return o;
+    }
   }catch(e){}
-  return {cfg:{url:'',token:''}, items:[], itemsAt:0, queue:[], lastSync:0, lastError:'', lastType:'out', lastUsed:'Production'};
+  return {cfg:{url:'',token:''}, items:DEFAULT_ITEMS, itemsAt:0, queue:[], lastSync:0, lastError:'', lastType:'out', lastUsed:'Production'};
 }
 let S = load();
+if (!S.cfg.url) S.cfg.url = DEFAULT_URL;
+if (!S.cfg.token) S.cfg.token = DEFAULT_TOKEN;
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }
   catch(e){ toast('Phone storage is full. Connect to the internet to sync.'); }
 }
-const V = { tab:'add', q:'', filter:'all', code:null, item:null, type:'out', used:'Production' };
+const V = { tab:'add', q:'', filter:'all', cat:null, code:null, item:null, type:'out', used:'Production' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = n => Number(n).toLocaleString('en-IN', {maximumFractionDigits:2});
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + Math.random().toString(36).slice(2,10));
 const today = () => new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-if (!S.cfg.url) S.cfg.url = DEFAULT_URL;
-if (!S.cfg.token) S.cfg.token = DEFAULT_TOKEN;
 const configured = () => !!(S.cfg.url && S.cfg.token);
 
 let toastT;
@@ -251,7 +261,7 @@ function ago(ts){
 }
 
 /* ================= Stock maths ================= */
-// entries that the sheet's summary does not include yet
+const known = () => S.itemsAt > 0;   // false until stock has been loaded from the sheet once
 function delta(code){
   let d = 0;
   for (const e of S.queue){
@@ -263,15 +273,29 @@ function delta(code){
 function statusOf(it){
   const d = delta(it.code), stock = it.stock + d;
   let st;
-  if (it.status === '-' && d === 0) st = '-';
+  if (!known()) st = '-';
+  else if (it.status === '-' && d === 0) st = '-';
   else if (stock <= 0) st = 'OUT';
   else if (stock <= it.min) st = 'LOW';
   else st = 'OK';
   return {stock, st, d};
 }
+const stockTxt = s => known() ? fmt(s.stock) : '—';
 const pendingCount = () => S.queue.filter(e => e.state==='pending').length;
 const errorCount = () => S.queue.filter(e => e.state==='error').length;
 const niceName = it => it.item + (it.size && it.size!=='n/a' ? ' - ' + it.size : '');
+
+/* ---- categories ---- */
+function catOf(name){ const c = CATEGORIES.find(c => c.items.includes(name)); return c ? c.name : 'Other'; }
+function catList(){
+  const present = new Set(S.items.map(i => catOf(i.item)));
+  const list = CATEGORIES.map(c => c.name).filter(n => present.has(n));
+  if (present.has('Other')) list.push('Other');
+  return list;
+}
+const itemNames = cat => [...new Set(S.items.filter(i => catOf(i.item) === cat).map(i => i.item))];
+const sizesOf = name => S.items.filter(i => i.item === name);
+const curItem = () => S.items.find(i => i.code === V.code) || null;
 
 /* ================= Sync (never blocks) ================= */
 let syncing = false, syncStart = 0, retryT = null;
@@ -359,57 +383,151 @@ function renderStatus(){
   if (!configured()) { b.textContent = 'Set up'; b.classList.add('warn'); }
   else if (syncing) { b.textContent = 'Syncing'; b.classList.add('spin'); }
   else if (n)       { b.textContent = n + ' to send'; b.classList.add('warn'); }
-  else              { b.textContent = S.lastSync ? 'Synced ' + ago(S.lastSync) : 'Not synced yet'; }
-
+  else if (S.lastSync){ b.textContent = 'Synced ' + ago(S.lastSync); b.classList.add('ok'); }
+  else              { b.textContent = 'Tap to sync'; }
   const bn = $('banner');
   if (configured() && S.lastError && !syncing){
     bn.hidden = false;
     bn.textContent = (n ? 'Saved on this phone, will send when connected. ' : '') + S.lastError;
   } else bn.hidden = true;
-
   const k = pendingCount() + errorCount();
   $('navN').hidden = !k; $('navN').textContent = k;
 }
 
-function renderList(){
-  const q = V.q.trim().toLowerCase();
-  const el = $('list');
-  if (!S.items.length){
-    el.innerHTML = '<div class="empty">' + (configured()
-      ? 'No items loaded yet.<br>Tap the button at the top to load them from your sheet.'
-      : 'Open Settings (⚙) and enter your password to load your items.') + '</div>';
-    return;
-  }
-  const groups = new Map();
-  for (const it of S.items){
+function worstOf(rows){
+  return rows.some(r => r.st==='OUT') ? 'OUT' : rows.some(r => r.st==='LOW') ? 'LOW' : rows.every(r => r.st==='-') ? '' : 'OK';
+}
+
+function renderForm(){
+  const cats = catList();
+  if (!V.cat || !cats.includes(V.cat)) V.cat = cats[0] || null;
+  $('catChips').innerHTML = cats.map(c => '<button type="button" class="cat" data-cat="' + esc(c) + '" aria-pressed="' + (V.cat===c) + '">' + esc(c) + '</button>').join('');
+
+  const names = V.cat ? itemNames(V.cat) : [];
+  $('itemGrid').innerHTML = names.map(n => {
+    const sz = sizesOf(n), rows = sz.map(statusOf);
+    const sub = sz.length > 1 ? sz.length + ' sizes' : (known() ? fmt(rows[0].stock) + ' ' + esc(sz[0].unit) : esc(sz[0].unit));
+    return '<button type="button" class="tile" data-item="' + esc(n) + '" aria-pressed="' + (V.item===n) + '"><span class="tn">' + esc(n)
+      + '</span><span class="ts"><span class="d ' + worstOf(rows) + '"></span>' + sub + '</span></button>';
+  }).join('');
+
+  const sz = V.item ? sizesOf(V.item) : [];
+  const needSize = sz.length > 1 || (sz.length === 1 && sz[0].size && sz[0].size !== 'n/a');
+  $('sizeWrap').hidden = !(V.item && needSize);
+  $('sizeChips').innerHTML = sz.map(it => {
     const s = statusOf(it);
-    if (V.filter==='low' && !(s.st==='OUT' || s.st==='LOW')) continue;
-    if (q && !(it.code+' '+it.item+' '+it.size).toLowerCase().includes(q)) continue;
-    if (!groups.has(it.item)) groups.set(it.item, []);
-    groups.get(it.item).push({it, s});
-  }
-  if (!groups.size){ el.innerHTML = '<div class="empty">' + (V.filter==='low' ? 'Nothing needs reorder right now.' : 'No match.') + '</div>'; return; }
+    return '<button type="button" class="size" data-code="' + esc(it.code) + '" aria-pressed="' + (V.code===it.code) + '"><b>' + esc(it.size)
+      + '</b><span>' + (known() ? fmt(s.stock) + ' ' + esc(it.unit) : esc(it.unit)) + '</span></button>';
+  }).join('');
+
+  const it = curItem(), si = $('selInfo');
+  if (it){
+    const s = statusOf(it);
+    si.hidden = false;
+    si.innerHTML = '<div><b>' + esc(niceName(it)) + '</b><br><span>' + esc(it.code) + '</span></div><div style="text-align:right"><b>' + stockTxt(s) + ' ' + esc(it.unit) + '</b><br><span>in stock</span></div>';
+  } else si.hidden = true;
+
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t===V.type)));
+  $('usedChips').hidden = V.type !== 'out'; $('party').hidden = V.type !== 'in';
+  $('partyLbl').textContent = V.type==='in' ? 'Supplier (optional)' : 'Used for';
+  $('usedChips').innerHTML = USED_FOR.map(u => '<button type="button" class="opt" data-used="' + esc(u) + '" aria-pressed="' + (V.used===u) + '">' + esc(u) + '</button>').join('');
+  const sv = $('save'); sv.className = 'btn big ' + V.type;
+  sv.textContent = V.type==='in' ? 'Save stock in' : 'Save stock out';
+  updateAfter();
+}
+function selectCode(code){
+  const it = S.items.find(i => i.code === code); if (!it) return;
+  V.cat = catOf(it.item); V.item = it.item; V.code = it.code; renderForm();
+}
+function selectItem(name){
+  V.item = name;
+  const sz = sizesOf(name);
+  V.code = (sz.length === 1) ? sz[0].code : null;
+  renderForm();
+  if (V.code) $('qty').focus();
+  else setTimeout(() => $('sizeWrap').scrollIntoView({behavior:'smooth', block:'center'}), 50);
+}
+function setType(t){ V.type = t; S.lastType = t; renderForm(); }
+function changeQty(delta){
+  const q = parseFloat($('qty').value) || 0;
+  $('qty').value = Math.max(0, Math.round((q + delta) * 100) / 100) || '';
+  updateAfter();
+}
+function updateAfter(){
+  const a = $('after'), it = curItem();
+  if (!it){ a.className = 'after'; a.textContent = V.item ? 'Pick a size' : ''; return; }
+  const q = parseFloat($('qty').value);
+  if (!(q > 0) || !known()){ a.className = 'after'; a.textContent = ''; return; }
+  const next = statusOf(it).stock + (V.type==='in' ? q : -q);
+  a.className = 'after' + (next < 0 ? ' neg' : '');
+  a.textContent = 'Stock after: ' + fmt(next) + ' ' + it.unit + (next < 0 ? '  (more than you have)' : '');
+}
+function saveEntry(){
+  const it = curItem();
+  if (!it){ toast(V.item ? 'Pick a size first' : 'Pick an item first'); return; }
+  const qty = parseFloat($('qty').value);
+  if (!(qty > 0)){ toast('Enter a quantity above 0'); $('qty').focus(); return; }
+  const date = $('date').value || today();
+  $('save').disabled = true;
+  const party = V.type==='in' ? $('party').value.trim() : V.used;
+  if (V.type==='out') S.lastUsed = V.used;
+  S.lastType = V.type;
+  S.queue.push({id:uid(), type:V.type, code:it.code, item:niceName(it), qty, date, party, note:$('note').value.trim(),
+                ts:Date.now(), state:'pending', err:'', counted:false});
+  $('lastSaved').textContent = 'Saved: ' + (V.type==='in'?'+':'−') + fmt(qty) + ' ' + it.unit + ' · ' + niceName(it);
+  V.item = null; V.code = null; $('qty').value = ''; $('note').value = ''; $('party').value = '';
+  save(); renderAll();
+  window.scrollTo(0,0); $('tab-add').parentElement.scrollTop = 0;
+  $('save').disabled = false;
+  toast('Saved on this phone');
+  sync(false);
+}
+function resetFormDefaults(){
+  V.type = S.lastType === 'in' ? 'in' : 'out';
+  V.used = USED_FOR.includes(S.lastUsed) ? S.lastUsed : USED_FOR[0];
+  $('date').value = today();
+}
+
+function renderList(){
+  const cats = catList(), q = V.q.trim().toLowerCase();
+  const filters = [['all','All'], ...cats.map(c => [c,c]), ['low','Needs reorder']];
+  $('stockChips').innerHTML = filters.map(([k,l]) => '<button type="button" class="cat" data-f="' + esc(k) + '" aria-pressed="' + (V.filter===k) + '">' + esc(l) + '</button>').join('');
+  const el = $('list');
   let h = '';
-  for (const [name, rows] of groups){
-    const plain = rows.every(r => r.it.size==='n/a' || !r.it.size);
-    if (!plain) h += '<div class="grp">' + esc(name) + '</div>';
-    for (const {it, s} of rows){
-      const label = plain ? it.item : it.size;
-      h += '<button class="row" type="button" data-code="' + esc(it.code) + '">'
-        + '<span class="dot ' + (s.st==='-'?'':s.st) + '"></span>'
-        + '<span class="lbl"><b>' + esc(label) + '</b><small>' + esc(it.code) + (s.st==='LOW'?' · reorder':'') + (s.st==='OUT'?' · out of stock':'') + '</small></span>'
-        + '<span class="qty ' + (s.st==='OUT'||s.st==='LOW'?s.st:'') + '">' + fmt(s.stock) + '<small> ' + esc(it.unit) + '</small>'
-        + (s.d ? '<i>' + (s.d>0?'+':'−') + fmt(Math.abs(s.d)) + ' not synced</i>' : '') + '</span></button>';
+  for (const cat of cats){
+    if (V.filter !== 'all' && V.filter !== 'low' && V.filter !== cat) continue;
+    const groups = new Map();
+    for (const it of S.items){
+      if (catOf(it.item) !== cat) continue;
+      const s = statusOf(it);
+      if (V.filter==='low' && !(s.st==='OUT' || s.st==='LOW')) continue;
+      if (q && !(it.code+' '+it.item+' '+it.size).toLowerCase().includes(q)) continue;
+      if (!groups.has(it.item)) groups.set(it.item, []);
+      groups.get(it.item).push({it, s});
+    }
+    if (!groups.size) continue;
+    h += '<div class="hd">' + esc(cat) + '</div>';
+    for (const [name, rows] of groups){
+      for (const {it, s} of rows){
+        const plain = it.size==='n/a' || !it.size;
+        h += '<button class="row" type="button" data-code="' + esc(it.code) + '">'
+          + '<span class="d ' + (s.st==='-'?'':s.st) + '"></span>'
+          + '<span class="lbl"><b>' + esc(plain ? it.item : it.item + ' · ' + it.size) + '</b><small>' + esc(it.code) + (s.st==='LOW'?' · reorder':'') + (s.st==='OUT'?' · out of stock':'') + '</small></span>'
+          + '<span class="qtyc ' + (s.st==='OUT'||s.st==='LOW'?s.st:'') + '">' + stockTxt(s) + '<small> ' + esc(it.unit) + '</small>'
+          + (s.d ? '<i>' + (s.d>0?'+':'−') + fmt(Math.abs(s.d)) + ' not synced</i>' : '') + '</span></button>';
+      }
     }
   }
+  if (!h) h = '<div class="empty">' + (V.filter==='low' ? 'Nothing needs reorder right now.' : 'No match.') + '</div>';
+  if (!known()) h = '<div class="empty" style="margin-bottom:10px">Stock numbers are not loaded yet.' + (configured() ? '<br>Connect to the internet and tap the sync button at the top.' : '<br>Open Settings and enter your password.') + '</div>' + h;
   el.innerHTML = h;
 }
 
 function renderLog(){
   const el = $('logList');
-  if (!S.queue.length){ el.innerHTML = '<div class="empty">No entries yet.<br>Tap an item on the Stock tab to add one.</div>'; return; }
+  if (!S.queue.length){ el.innerHTML = '<div class="empty" style="margin-top:12px">No entries yet.<br>Use the Add tab to make your first one.</div>'; return; }
   const rows = S.queue.slice().sort((a,b) => b.ts - a.ts);
-  el.innerHTML = rows.map(e => {
+  el.innerHTML = '<div style="height:8px"></div>' + rows.map(e => {
     const it = S.items.find(i => i.code===e.code);
     const unit = it ? ' ' + it.unit : '';
     const label = e.state==='pending' ? 'Waiting' : e.state==='error' ? 'Rejected' : 'In sheet';
@@ -429,110 +547,17 @@ function setTab(t){
   document.querySelectorAll('nav button').forEach(b => { if (b.dataset.tab===t) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   if (t==='set'){
     $('cfgUrl').value = S.cfg.url; $('cfgTok').value = S.cfg.token;
-    $('pwHint').textContent = S.cfg.token ? '' : 'Enter the password (SECRET) from your script once. It is saved on this phone.';
+    $('pwHint').textContent = S.cfg.token ? (known() ? S.items.length + ' items loaded from your sheet.' : '') : 'Enter the password (SECRET) from your script once. It is saved on this phone.';
   }
-  if ($('date') && t==='add' && !$('date').value) $('date').value = today();
+  if (t==='add' && !$('date').value) $('date').value = today();
   window.scrollTo(0,0); $('tab-'+t).parentElement.scrollTop = 0;
-}
-
-/* ================= Entry form ================= */
-const itemNames = () => [...new Set(S.items.map(i => i.item))];
-const sizesOf = name => S.items.filter(i => i.item === name);
-const curItem = () => S.items.find(i => i.code === V.code) || null;
-
-function renderForm(){
-  // item chips
-  const names = itemNames();
-  $('itemChips').innerHTML = names.length ? names.map(n => {
-    const rows = sizesOf(n).map(statusOf);
-    const worst = rows.some(r => r.st==='OUT') ? 'OUT' : rows.some(r => r.st==='LOW') ? 'LOW' : rows.every(r => r.st==='-') ? '' : 'OK';
-    return '<button type="button" class="pick" data-item="' + esc(n) + '" aria-pressed="' + (V.item===n) + '"><span class="d ' + worst + '"></span>' + esc(n) + '</button>';
-  }).join('') : '<div class="msg">No items yet. ' + (configured() ? 'Tap the sync button to load them.' : 'Open Settings (⚙) and enter your password.') + '</div>';
-
-  // size chips
-  const sz = V.item ? sizesOf(V.item) : [];
-  const needSize = sz.length > 1 || (sz.length === 1 && sz[0].size && sz[0].size !== 'n/a');
-  $('sizeWrap').hidden = !(V.item && needSize);
-  $('sizeChips').innerHTML = sz.map(it => {
-    const s = statusOf(it);
-    return '<button type="button" class="pick" data-code="' + esc(it.code) + '" aria-pressed="' + (V.code===it.code) + '"><span class="d ' + s.st.replace('-','') + '"></span>' + esc(it.size) + '</button>';
-  }).join('');
-
-  // selected info
-  const it = curItem(), si = $('selInfo');
-  if (it){
-    const s = statusOf(it);
-    si.hidden = false;
-    si.innerHTML = '<div><b>' + esc(niceName(it)) + '</b><br><span>' + esc(it.code) + '</span></div><div style="text-align:right"><b>' + fmt(s.stock) + ' ' + esc(it.unit) + '</b><br><span>in stock</span></div>';
-  } else si.hidden = true;
-
-  // type-dependent bits
-  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t===V.type)));
-  $('usedChips').hidden = V.type !== 'out'; $('party').hidden = V.type !== 'in';
-  $('partyLbl').textContent = V.type==='in' ? 'Supplier (optional)' : 'Used for';
-  $('usedChips').innerHTML = USED_FOR.map(u => '<button type="button" class="pick" data-used="' + esc(u) + '" aria-pressed="' + (V.used===u) + '">' + esc(u) + '</button>').join('');
-  const sv = $('save'); sv.className = 'btn big ' + V.type;
-  sv.textContent = V.type==='in' ? 'Save stock in' : 'Save stock out';
-  updateAfter();
-}
-function selectCode(code){
-  const it = S.items.find(i => i.code === code); if (!it) return;
-  V.item = it.item; V.code = it.code; renderForm();
-}
-function selectItem(name){
-  V.item = name;
-  const sz = sizesOf(name);
-  V.code = (sz.length === 1) ? sz[0].code : null;     // one size: auto-select, else ask
-  renderForm();
-  if (V.code) $('qty').focus();
-}
-function setType(t){ V.type = t; S.lastType = t; renderForm(); }
-function changeQty(delta){
-  const q = parseFloat($('qty').value) || 0;
-  $('qty').value = Math.max(0, Math.round((q + delta) * 100) / 100) || '';
-  updateAfter();
-}
-function updateAfter(){
-  const a = $('after'), it = curItem();
-  if (!it){ a.className = 'after'; a.textContent = V.item ? 'Pick a size' : 'Pick an item'; return; }
-  const cur = statusOf(it).stock, q = parseFloat($('qty').value);
-  if (!(q > 0)){ a.className = 'after'; a.textContent = ''; return; }
-  const next = V.type==='in' ? cur + q : cur - q;
-  a.className = 'after' + (next < 0 ? ' neg' : '');
-  a.textContent = 'Stock after: ' + fmt(next) + ' ' + it.unit + (next < 0 ? '  (more than you have)' : '');
-}
-function saveEntry(){
-  const it = curItem();
-  if (!it){ toast(V.item ? 'Pick a size first' : 'Pick an item first'); return; }
-  const qty = parseFloat($('qty').value);
-  if (!(qty > 0)){ toast('Enter a quantity above 0'); $('qty').focus(); return; }
-  const date = $('date').value || today();
-  $('save').disabled = true;                           // stops double-tap duplicates
-  const party = V.type==='in' ? $('party').value.trim() : V.used;
-  if (V.type==='out') S.lastUsed = V.used;
-  S.lastType = V.type;
-  S.queue.push({id:uid(), type:V.type, code:it.code, item:niceName(it), qty, date, party, note:$('note').value.trim(),
-                ts:Date.now(), state:'pending', err:'', counted:false});
-  $('lastSaved').textContent = 'Saved: ' + (V.type==='in'?'+':'−') + fmt(qty) + ' ' + it.unit + ' · ' + niceName(it);
-  // ready for the next entry: keep In/Out and date, clear the rest
-  V.item = null; V.code = null; $('qty').value = ''; $('note').value = ''; $('party').value = '';
-  save(); renderAll();
-  window.scrollTo(0,0); $('tab-add').parentElement.scrollTop = 0;
-  $('save').disabled = false;
-  toast('Saved on this phone');
-  sync(false);
-}
-function resetFormDefaults(){
-  V.type = S.lastType === 'in' ? 'in' : 'out';
-  V.used = USED_FOR.includes(S.lastUsed) ? S.lastUsed : USED_FOR[0];
-  $('date').value = today();
 }
 
 /* ================= Wiring ================= */
 $('syncBtn').onclick = () => sync(true);
-$('gear').onclick = () => setTab('set');
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setType(b.dataset.t));
-$('itemChips').onclick = e => { const b = e.target.closest('[data-item]'); if (b) selectItem(b.dataset.item); };
+$('catChips').onclick = e => { const b = e.target.closest('[data-cat]'); if (b){ V.cat = b.dataset.cat; V.item = null; V.code = null; renderForm(); } };
+$('itemGrid').onclick = e => { const b = e.target.closest('[data-item]'); if (b) selectItem(b.dataset.item); };
 $('sizeChips').onclick = e => { const b = e.target.closest('[data-code]'); if (b){ V.code = b.dataset.code; renderForm(); $('qty').focus(); } };
 $('usedChips').onclick = e => { const b = e.target.closest('[data-used]'); if (b){ V.used = b.dataset.used; renderForm(); } };
 $('qty').oninput = updateAfter;
@@ -541,11 +566,7 @@ $('plus').onclick = () => changeQty(1);
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => changeQty(Number(b.dataset.add)));
 $('save').onclick = saveEntry;
 $('q').oninput = e => { V.q = e.target.value; renderList(); };
-document.querySelectorAll('.chip').forEach(c => c.onclick = () => {
-  V.filter = c.dataset.f;
-  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x===c)));
-  renderList();
-});
+$('stockChips').onclick = e => { const c = e.target.closest('[data-f]'); if (c){ V.filter = c.dataset.f; renderList(); } };
 $('list').onclick = e => { const r = e.target.closest('.row'); if (r){ selectCode(r.dataset.code); setTab('add'); $('qty').focus(); } };
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
 $('logList').onclick = e => {
@@ -555,7 +576,7 @@ $('logList').onclick = e => {
 };
 
 $('cfgSave').onclick = async () => {
-  let url = $('cfgUrl').value.trim(); const tok = $('cfgTok').value.trim(); const m = $('cfgMsg');
+  const url = $('cfgUrl').value.trim(), tok = $('cfgTok').value.trim(), m = $('cfgMsg');
   if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){ m.className='msg bad'; m.textContent='The link must start with https://script.google.com and end with /exec'; return; }
   if (!tok){ m.className='msg bad'; m.textContent='Enter the password you set as SECRET in the script.'; return; }
   S.cfg = {url, token:tok}; save();
@@ -588,12 +609,10 @@ let deferred = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; });
 $('installBtn').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $('installBtn').hidden = true; };
 
-/* auto-sync triggers */
 window.addEventListener('online', () => sync(false));
 document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible') sync(false); });
 setInterval(() => { renderStatus(); if (pendingCount() && !syncing) sync(false); }, 45000);
 
-/* setup link: ?url=...&token=... */
 (function(){
   const p = new URLSearchParams(location.search);
   if (p.get('url') && p.get('token')){
