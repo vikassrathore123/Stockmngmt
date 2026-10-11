@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14343b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Artime Stock</title>
+<style>
+:root{
+  --bg:#f2f5f6; --card:#ffffff; --ink:#14232b; --mute:#64767e; --line:#dde5e8;
+  --brand:#14343b; --in:#0f766e; --out:#b45309; --ok:#15803d; --low:#b45309; --bad:#b91c1c;
+  --chip:#e6edef;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0e171b;--card:#16242a;--ink:#e8f0f2;--mute:#8ba0a8;--line:#24373e;--brand:#0b1f24;
+        --in:#2dd4bf;--out:#fbbf24;--ok:#4ade80;--low:#fbbf24;--bad:#f87171;--chip:#1d2f36}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     display:flex;flex-direction:column;max-width:600px;margin:0 auto}
+button,input,select{font:inherit;color:inherit}
+header{background:var(--brand);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+       display:flex;align-items:center;justify-content:space-between;gap:12px}
+header h1{font-size:18px;margin:0;font-weight:650;letter-spacing:.2px}
+.pill{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:99px;padding:7px 13px;font-size:13px;min-height:34px}
+.pill.warn{background:#f59e0b;color:#2b1700}
+.pill.spin::before{content:"";display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:50%;
+  border:2px solid currentColor;border-right-color:transparent;animation:r .8s linear infinite;vertical-align:-1px}
+@keyframes r{to{transform:rotate(360deg)}}
+#banner{background:#fef3c7;color:#5b3a00;font-size:13px;padding:8px 16px;border-bottom:1px solid #f5d98a}
+main{flex:1;overflow-y:auto;padding:12px 14px 90px}
+section[hidden]{display:none}
+.tools{position:sticky;top:-12px;background:var(--bg);padding:2px 0 10px;z-index:2}
+input[type=search],input[type=text],input[type=number],input[type=date],input[type=url],input[type=password],select{
+  width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px}
+.chips{display:flex;gap:8px;margin-top:8px}
+.chip{background:var(--chip);border:0;border-radius:99px;padding:7px 14px;font-size:14px}
+.chip[aria-pressed=true]{background:var(--brand);color:#fff}
+.grp{margin:14px 2px 6px;font-size:13px;color:var(--mute);font-weight:600}
+.row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+     border-radius:10px;padding:12px 14px;margin-bottom:6px;min-height:52px}
+.row:active{background:var(--chip)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--line)}
+.dot.OK{background:var(--ok)}.dot.LOW{background:var(--low)}.dot.OUT{background:var(--bad)}
+.lbl{flex:1;min-width:0}
+.lbl b{font-weight:600}
+.lbl small{display:block;color:var(--mute);font-size:12px}
+.qty{font-variant-numeric:tabular-nums;font-size:19px;font-weight:650;text-align:right}
+.qty.OUT{color:var(--bad)}.qty.LOW{color:var(--low)}
+.qty small{font-size:12px;font-weight:400;color:var(--mute)}
+.qty i{display:block;font-style:normal;font-size:11px;font-weight:500;color:var(--mute)}
+.empty{text-align:center;color:var(--mute);padding:40px 20px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--card);
+    border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;border:0;padding:12px 4px;font-size:14px;color:var(--mute);min-height:52px;position:relative}
+nav button[aria-current=page]{color:var(--ink);font-weight:650;box-shadow:inset 0 3px 0 var(--brand)}
+.badge-n{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;margin-left:6px}
+.log{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.sign{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
+.sign.in{background:color-mix(in srgb,var(--in) 18%,transparent);color:var(--in)}
+.sign.out{background:color-mix(in srgb,var(--out) 18%,transparent);color:var(--out)}
+.log .t{flex:1;min-width:0}
+.log .t b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log .t span{font-size:12px;color:var(--mute)}
+.log .t em{display:block;font-size:12px;color:var(--bad);font-style:normal}
+.st{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--chip);color:var(--mute);white-space:nowrap}
+.st.pending{background:#fef3c7;color:#7a4b00}.st.error{background:#fee2e2;color:#991b1b}.st.synced{color:var(--ok)}
+.x{background:none;border:0;color:var(--mute);font-size:22px;padding:4px 8px;min-height:40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px}
+.card label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600;min-height:48px;width:100%}
+.btn.alt{background:var(--chip);color:var(--ink)}
+.btn:disabled{opacity:.55}
+.msg{font-size:13px;margin-top:8px;color:var(--mute);min-height:18px}
+.msg.bad{color:var(--bad)}.msg.good{color:var(--ok)}
+.card.f{padding:14px 14px 16px}
+.lab{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px;font-weight:600}
+.lab:first-child{margin-top:0}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:13px;font-weight:700;font-size:17px;min-height:54px}
+.seg button[aria-pressed=true].in{background:var(--in);color:#fff;border-color:var(--in)}
+.seg button[aria-pressed=true].out{background:var(--out);color:#fff;border-color:var(--out)}
+@media (prefers-color-scheme:dark){.seg button[aria-pressed=true]{color:#06191c !important}}
+.chipbox{display:flex;flex-wrap:wrap;gap:8px}
+.pick{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 13px;font-size:15px;min-height:42px}
+.pick[aria-pressed=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.pick .d{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--line)}
+.pick .d.OK{background:var(--ok)}.pick .d.LOW{background:var(--low)}.pick .d.OUT{background:var(--bad)}
+.pick[aria-pressed=true] .d{box-shadow:0 0 0 1.5px #fff}
+.sel{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px}
+.sel b{font-weight:650}.sel span{color:var(--mute);font-size:13px}
+.stp{display:grid;grid-template-columns:56px 1fr 56px;gap:8px;align-items:stretch}
+.stp button{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;font-size:26px;font-weight:600;min-height:60px}
+#qty{font-size:30px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;min-height:60px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.quick button{border:1.5px solid var(--line);background:var(--chip);border-radius:10px;padding:10px 0;font-weight:600;min-height:44px}
+.after{text-align:center;font-size:14px;color:var(--mute);margin:10px 0 0;min-height:20px}
+.after.neg{color:var(--bad);font-weight:600}
+.savebar{padding:2px 0 4px}
+.btn.big{min-height:56px;font-size:18px;border-radius:12px}
+.btn.big.in{background:var(--in)}.btn.big.out{background:var(--out)}
+@media (prefers-color-scheme:dark){.btn.big.in,.btn.big.out{color:#06191c}}
+.last{font-size:13px;color:var(--mute);text-align:center;margin-top:8px}
+.gear{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:99px;width:34px;height:34px;font-size:17px}
+.hdr-r{display:flex;gap:8px;align-items:center}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#14232b;color:#fff;
+       padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+:focus-visible{outline:3px solid #38bdf8;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.pill.spin::before{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Artime Stock</h1>
+  <div class="hdr-r"><button id="syncBtn" class="pill" type="button">…</button><button id="gear" class="gear" type="button" aria-label="Settings">⚙</button></div>
+</header>
+<div id="banner" hidden></div>
+
+<main>
+  <section id="tab-add">
+    <div class="card f">
+      <div class="seg" role="group" aria-label="Entry type">
+        <button type="button" class="in" data-t="in" aria-pressed="false">+ Stock in</button>
+        <button type="button" class="out" data-t="out" aria-pressed="true">− Stock out</button>
+      </div>
+      <span class="lab">Item</span>
+      <div id="itemChips" class="chipbox"></div>
+      <div id="sizeWrap" hidden>
+        <span class="lab">Size</span>
+        <div id="sizeChips" class="chipbox"></div>
+      </div>
+      <div id="selInfo" class="sel" hidden></div>
+      <span class="lab">Quantity</span>
+      <div class="stp">
+        <button id="minus" type="button" aria-label="Less">−</button>
+        <input id="qty" type="number" inputmode="decimal" min="0" step="any" placeholder="0">
+        <button id="plus" type="button" aria-label="More">+</button>
+      </div>
+      <div class="quick">
+        <button type="button" data-add="1">+1</button><button type="button" data-add="10">+10</button>
+        <button type="button" data-add="50">+50</button><button type="button" data-add="100">+100</button>
+      </div>
+      <div class="after" id="after"></div>
+      <span class="lab" id="partyLbl">Used for</span>
+      <div id="usedChips" class="chipbox"></div>
+      <input id="party" type="text" autocomplete="off" placeholder="Supplier name (optional)" hidden>
+      <span class="lab">Date</span>
+      <input id="date" type="date">
+      <span class="lab">Note (optional)</span>
+      <input id="note" type="text" autocomplete="off">
+    </div>
+    <div class="savebar"><button id="save" class="btn big out" type="button">Save entry</button></div>
+    <div class="last" id="lastSaved"></div>
+  </section>
+
+  <section id="tab-stock" hidden>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search item, size or code" autocomplete="off">
+      <div class="chips">
+        <button class="chip" data-f="all" aria-pressed="true" type="button">All</button>
+        <button class="chip" data-f="low" aria-pressed="false" type="button">Needs reorder</button>
+      </div>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <section id="tab-log" hidden>
+    <div id="logList"></div>
+  </section>
+
+  <section id="tab-set" hidden>
+    <div class="card">
+      <h2>Connect to your sheet</h2>
+      <div class="msg" id="pwHint"></div>
+      <label for="cfgUrl">Web app link (ends with /exec)</label>
+      <input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+      <label for="cfgTok">Password (SECRET from the script)</label>
+      <input id="cfgTok" type="password" autocomplete="off">
+      <div style="height:12px"></div>
+      <button id="cfgSave" class="btn" type="button">Save and test</button>
+      <div id="cfgMsg" class="msg"></div>
+    </div>
+    <div class="card">
+      <h2>This phone</h2>
+      <button id="installBtn" class="btn alt" type="button" hidden>Install app on home screen</button>
+      <div class="msg" id="instHint">To install: browser menu → Add to Home screen.</div>
+      <div style="height:8px"></div>
+      <button id="copyLink" class="btn alt" type="button">Copy setup link for another phone</button>
+      <div style="height:8px"></div>
+      <button id="reload" class="btn alt" type="button">Refresh app files</button>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="add" aria-current="page" type="button">Add entry</button>
+  <button data-tab="stock" type="button">Stock</button>
+  <button data-tab="log" type="button">Entries<span id="navN" class="badge-n" hidden></span></button>
+</nav>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ================= State ================= */
+const KEY = 'artime.stock.v1';
+// Built in: your Google Apps Script web app link. DEFAULT_TOKEN: put your SECRET here to skip the one-time password step.
+const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxGegpFMtdVyvICBaGGWiq0NoHBk4tdaHsouw-04S9Gwjl9XeDskCQ_9d3D1w8A0tgS/exec';
+const DEFAULT_TOKEN = '';
+const USED_FOR = ['Production','Online order','Offline sale','Damage / wastage','Other'];
+const SYNC_TIMEOUT_POST = 30000, SYNC_TIMEOUT_GET = 20000;
+
+function load(){
+  try{
+    const o = JSON.parse(localStorage.getItem(KEY));
+    if (o && Array.isArray(o.queue)) { o.cfg = o.cfg || {url:'',token:''}; o.items = o.items || []; return o; }
+  }catch(e){}
+  return {cfg:{url:'',token:''}, items:[], itemsAt:0, queue:[], lastSync:0, lastError:'', lastType:'out', lastUsed:'Production'};
+}
+let S = load();
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch(e){ toast('Phone storage is full. Connect to the internet to sync.'); }
+}
+const V = { tab:'add', q:'', filter:'all', code:null, item:null, type:'out', used:'Production' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n).toLocaleString('en-IN', {maximumFractionDigits:2});
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + Math.random().toString(36).slice(2,10));
+const today = () => new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+if (!S.cfg.url) S.cfg.url = DEFAULT_URL;
+if (!S.cfg.token) S.cfg.token = DEFAULT_TOKEN;
+const configured = () => !!(S.cfg.url && S.cfg.token);
+
+let toastT;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2600); }
+function ago(ts){
+  if(!ts) return 'never';
+  const m = Math.round((Date.now()-ts)/60000);
+  if(m<1) return 'just now'; if(m<60) return m+' min ago';
+  const h=Math.round(m/60); if(h<24) return h+' h ago';
+  return Math.round(h/24)+' d ago';
+}
+
+/* ================= Stock maths ================= */
+// entries that the sheet's summary does not include yet
+function delta(code){
+  let d = 0;
+  for (const e of S.queue){
+    if (e.code !== code) continue;
+    if (e.state === 'pending' || (e.state === 'synced' && !e.counted)) d += e.type==='in' ? e.qty : -e.qty;
+  }
+  return d;
+}
+function statusOf(it){
+  const d = delta(it.code), stock = it.stock + d;
+  let st;
+  if (it.status === '-' && d === 0) st = '-';
+  else if (stock <= 0) st = 'OUT';
+  else if (stock <= it.min) st = 'LOW';
+  else st = 'OK';
+  return {stock, st, d};
+}
+const pendingCount = () => S.queue.filter(e => e.state==='pending').length;
+const errorCount = () => S.queue.filter(e => e.state==='error').length;
+const niceName = it => it.item + (it.size && it.size!=='n/a' ? ' - ' + it.size : '');
+
+/* ================= Sync (never blocks) ================= */
+let syncing = false, syncStart = 0, retryT = null;
+
+async function fetchT(url, opts, ms){
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), ms);
+  try { return await fetch(url, Object.assign({}, opts, {signal: ac.signal, cache:'no-store', redirect:'follow'})); }
+  catch(e){
+    if (e && e.name === 'AbortError') throw new Error('Took too long (slow or no internet)');
+    throw new Error('No internet connection');
+  }
+  finally { clearTimeout(t); }
+}
+async function callScript(payload){
+  let res;
+  if (payload){
+    // text/plain avoids the browser "preflight" request that Apps Script cannot answer
+    res = await fetchT(S.cfg.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)}, SYNC_TIMEOUT_POST);
+  } else {
+    const u = new URL(S.cfg.url);
+    u.searchParams.set('token', S.cfg.token); u.searchParams.set('t', Date.now());
+    res = await fetchT(u.toString(), {method:'GET'}, SYNC_TIMEOUT_GET);
+  }
+  const txt = await res.text();
+  let j;
+  try { j = JSON.parse(txt); }
+  catch(e){ throw new Error('Script gave an unexpected reply. Check the deployment: "Who has access" must be Anyone, and the link must end with /exec.'); }
+  if (!j.ok) throw new Error(j.error || 'Script error');
+  return j;
+}
+
+async function sync(manual){
+  if (!configured()){ if (manual){ toast('Enter your password in Settings'); setTab('set'); } return; }
+  // watchdog: a sync can never block the next one for more than 45 s
+  if (syncing && Date.now() - syncStart < 45000){ if (manual) toast('Already syncing…'); return; }
+  syncing = true; syncStart = Date.now(); renderStatus();
+  clearTimeout(retryT);
+  let failed = false;
+  try {
+    for (let round = 0; round < 6; round++){
+      const batch = S.queue.filter(e => e.state==='pending').slice(0, 40);
+      const data = await callScript(batch.length ? {
+        token: S.cfg.token,
+        entries: batch.map(e => ({id:e.id, type:e.type, code:e.code, qty:e.qty, date:e.date, party:e.party, note:e.note}))
+      } : null);
+
+      if (Array.isArray(data.results)){
+        for (const r of data.results){
+          const e = S.queue.find(x => x.id === r.id);
+          if (!e) continue;
+          if (r.status === 'ok' || r.status === 'dup'){ e.state='synced'; e.err=''; e.syncedAt=Date.now(); }
+          else { e.state='error'; e.err = r.msg || 'Rejected by sheet'; }
+        }
+      }
+      if (Array.isArray(data.items)){
+        S.items = data.items; S.itemsAt = Date.now();
+        S.queue.forEach(e => { if (e.state==='synced') e.counted = true; });
+      }
+      S.lastSync = Date.now(); S.lastError = '';
+      save(); renderAll();
+      if (!batch.length) break;                       // was a plain refresh
+      if (!S.queue.some(e => e.state==='pending')) break;  // everything sent
+    }
+    prune();
+  } catch(e){
+    failed = true;
+    S.lastError = e.message || String(e);
+    if (manual) toast(S.lastError);
+  } finally {
+    syncing = false; save(); renderAll();
+    if (failed && pendingCount()) retryT = setTimeout(() => sync(false), 30000);
+  }
+}
+function prune(){
+  const synced = S.queue.filter(e => e.state==='synced').sort((a,b) => b.ts - a.ts);
+  const drop = new Set(synced.slice(30).map(e => e.id));
+  if (drop.size) S.queue = S.queue.filter(e => !drop.has(e.id));
+}
+
+/* ================= Rendering ================= */
+function renderStatus(){
+  const b = $('syncBtn'), n = pendingCount();
+  b.className = 'pill';
+  if (!configured()) { b.textContent = 'Set up'; b.classList.add('warn'); }
+  else if (syncing) { b.textContent = 'Syncing'; b.classList.add('spin'); }
+  else if (n)       { b.textContent = n + ' to send'; b.classList.add('warn'); }
+  else              { b.textContent = S.lastSync ? 'Synced ' + ago(S.lastSync) : 'Not synced yet'; }
+
+  const bn = $('banner');
+  if (configured() && S.lastError && !syncing){
+    bn.hidden = false;
+    bn.textContent = (n ? 'Saved on this phone, will send when connected. ' : '') + S.lastError;
+  } else bn.hidden = true;
+
+  const k = pendingCount() + errorCount();
+  $('navN').hidden = !k; $('navN').textContent = k;
+}
+
+function renderList(){
+  const q = V.q.trim().toLowerCase();
+  const el = $('list');
+  if (!S.items.length){
+    el.innerHTML = '<div class="empty">' + (configured()
+      ? 'No items loaded yet.<br>Tap the button at the top to load them from your sheet.'
+      : 'Open Settings (⚙) and enter your password to load your items.') + '</div>';
+    return;
+  }
+  const groups = new Map();
+  for (const it of S.items){
+    const s = statusOf(it);
+    if (V.filter==='low' && !(s.st==='OUT' || s.st==='LOW')) continue;
+    if (q && !(it.code+' '+it.item+' '+it.size).toLowerCase().includes(q)) continue;
+    if (!groups.has(it.item)) groups.set(it.item, []);
+    groups.get(it.item).push({it, s});
+  }
+  if (!groups.size){ el.innerHTML = '<div class="empty">' + (V.filter==='low' ? 'Nothing needs reorder right now.' : 'No match.') + '</div>'; return; }
+  let h = '';
+  for (const [name, rows] of groups){
+    const plain = rows.every(r => r.it.size==='n/a' || !r.it.size);
+    if (!plain) h += '<div class="grp">' + esc(name) + '</div>';
+    for (const {it, s} of rows){
+      const label = plain ? it.item : it.size;
+      h += '<button class="row" type="button" data-code="' + esc(it.code) + '">'
+        + '<span class="dot ' + (s.st==='-'?'':s.st) + '"></span>'
+        + '<span class="lbl"><b>' + esc(label) + '</b><small>' + esc(it.code) + (s.st==='LOW'?' · reorder':'') + (s.st==='OUT'?' · out of stock':'') + '</small></span>'
+        + '<span class="qty ' + (s.st==='OUT'||s.st==='LOW'?s.st:'') + '">' + fmt(s.stock) + '<small> ' + esc(it.unit) + '</small>'
+        + (s.d ? '<i>' + (s.d>0?'+':'−') + fmt(Math.abs(s.d)) + ' not synced</i>' : '') + '</span></button>';
+    }
+  }
+  el.innerHTML = h;
+}
+
+function renderLog(){
+  const el = $('logList');
+  if (!S.queue.length){ el.innerHTML = '<div class="empty">No entries yet.<br>Tap an item on the Stock tab to add one.</div>'; return; }
+  const rows = S.queue.slice().sort((a,b) => b.ts - a.ts);
+  el.innerHTML = rows.map(e => {
+    const it = S.items.find(i => i.code===e.code);
+    const unit = it ? ' ' + it.unit : '';
+    const label = e.state==='pending' ? 'Waiting' : e.state==='error' ? 'Rejected' : 'In sheet';
+    return '<div class="log"><span class="sign ' + e.type + '">' + (e.type==='in'?'+':'−') + '</span>'
+      + '<div class="t"><b>' + esc(e.item) + '</b><span>' + fmt(e.qty) + unit + ' · ' + esc(e.date) + (e.party?' · '+esc(e.party):'') + '</span>'
+      + (e.err ? '<em>' + esc(e.err) + '</em>' : '') + '</div>'
+      + '<span class="st ' + e.state + '">' + label + '</span>'
+      + (e.state!=='synced' ? '<button class="x" type="button" data-del="' + esc(e.id) + '" aria-label="Delete entry">×</button>' : '')
+      + '</div>';
+  }).join('');
+}
+function renderAll(){ renderStatus(); renderForm(); renderList(); renderLog(); }
+
+function setTab(t){
+  V.tab = t;
+  for (const id of ['add','stock','log','set']) $('tab-'+id).hidden = id !== t;
+  document.querySelectorAll('nav button').forEach(b => { if (b.dataset.tab===t) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  if (t==='set'){
+    $('cfgUrl').value = S.cfg.url; $('cfgTok').value = S.cfg.token;
+    $('pwHint').textContent = S.cfg.token ? '' : 'Enter the password (SECRET) from your script once. It is saved on this phone.';
+  }
+  if ($('date') && t==='add' && !$('date').value) $('date').value = today();
+  window.scrollTo(0,0); $('tab-'+t).parentElement.scrollTop = 0;
+}
+
+/* ================= Entry form ================= */
+const itemNames = () => [...new Set(S.items.map(i => i.item))];
+const sizesOf = name => S.items.filter(i => i.item === name);
+const curItem = () => S.items.find(i => i.code === V.code) || null;
+
+function renderForm(){
+  // item chips
+  const names = itemNames();
+  $('itemChips').innerHTML = names.length ? names.map(n => {
+    const rows = sizesOf(n).map(statusOf);
+    const worst = rows.some(r => r.st==='OUT') ? 'OUT' : rows.some(r => r.st==='LOW') ? 'LOW' : rows.every(r => r.st==='-') ? '' : 'OK';
+    return '<button type="button" class="pick" data-item="' + esc(n) + '" aria-pressed="' + (V.item===n) + '"><span class="d ' + worst + '"></span>' + esc(n) + '</button>';
+  }).join('') : '<div class="msg">No items yet. ' + (configured() ? 'Tap the sync button to load them.' : 'Open Settings (⚙) and enter your password.') + '</div>';
+
+  // size chips
+  const sz = V.item ? sizesOf(V.item) : [];
+  const needSize = sz.length > 1 || (sz.length === 1 && sz[0].size && sz[0].size !== 'n/a');
+  $('sizeWrap').hidden = !(V.item && needSize);
+  $('sizeChips').innerHTML = sz.map(it => {
+    const s = statusOf(it);
+    return '<button type="button" class="pick" data-code="' + esc(it.code) + '" aria-pressed="' + (V.code===it.code) + '"><span class="d ' + s.st.replace('-','') + '"></span>' + esc(it.size) + '</button>';
+  }).join('');
+
+  // selected info
+  const it = curItem(), si = $('selInfo');
+  if (it){
+    const s = statusOf(it);
+    si.hidden = false;
+    si.innerHTML = '<div><b>' + esc(niceName(it)) + '</b><br><span>' + esc(it.code) + '</span></div><div style="text-align:right"><b>' + fmt(s.stock) + ' ' + esc(it.unit) + '</b><br><span>in stock</span></div>';
+  } else si.hidden = true;
+
+  // type-dependent bits
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t===V.type)));
+  $('usedChips').hidden = V.type !== 'out'; $('party').hidden = V.type !== 'in';
+  $('partyLbl').textContent = V.type==='in' ? 'Supplier (optional)' : 'Used for';
+  $('usedChips').innerHTML = USED_FOR.map(u => '<button type="button" class="pick" data-used="' + esc(u) + '" aria-pressed="' + (V.used===u) + '">' + esc(u) + '</button>').join('');
+  const sv = $('save'); sv.className = 'btn big ' + V.type;
+  sv.textContent = V.type==='in' ? 'Save stock in' : 'Save stock out';
+  updateAfter();
+}
+function selectCode(code){
+  const it = S.items.find(i => i.code === code); if (!it) return;
+  V.item = it.item; V.code = it.code; renderForm();
+}
+function selectItem(name){
+  V.item = name;
+  const sz = sizesOf(name);
+  V.code = (sz.length === 1) ? sz[0].code : null;     // one size: auto-select, else ask
+  renderForm();
+  if (V.code) $('qty').focus();
+}
+function setType(t){ V.type = t; S.lastType = t; renderForm(); }
+function changeQty(delta){
+  const q = parseFloat($('qty').value) || 0;
+  $('qty').value = Math.max(0, Math.round((q + delta) * 100) / 100) || '';
+  updateAfter();
+}
+function updateAfter(){
+  const a = $('after'), it = curItem();
+  if (!it){ a.className = 'after'; a.textContent = V.item ? 'Pick a size' : 'Pick an item'; return; }
+  const cur = statusOf(it).stock, q = parseFloat($('qty').value);
+  if (!(q > 0)){ a.className = 'after'; a.textContent = ''; return; }
+  const next = V.type==='in' ? cur + q : cur - q;
+  a.className = 'after' + (next < 0 ? ' neg' : '');
+  a.textContent = 'Stock after: ' + fmt(next) + ' ' + it.unit + (next < 0 ? '  (more than you have)' : '');
+}
+function saveEntry(){
+  const it = curItem();
+  if (!it){ toast(V.item ? 'Pick a size first' : 'Pick an item first'); return; }
+  const qty = parseFloat($('qty').value);
+  if (!(qty > 0)){ toast('Enter a quantity above 0'); $('qty').focus(); return; }
+  const date = $('date').value || today();
+  $('save').disabled = true;                           // stops double-tap duplicates
+  const party = V.type==='in' ? $('party').value.trim() : V.used;
+  if (V.type==='out') S.lastUsed = V.used;
+  S.lastType = V.type;
+  S.queue.push({id:uid(), type:V.type, code:it.code, item:niceName(it), qty, date, party, note:$('note').value.trim(),
+                ts:Date.now(), state:'pending', err:'', counted:false});
+  $('lastSaved').textContent = 'Saved: ' + (V.type==='in'?'+':'−') + fmt(qty) + ' ' + it.unit + ' · ' + niceName(it);
+  // ready for the next entry: keep In/Out and date, clear the rest
+  V.item = null; V.code = null; $('qty').value = ''; $('note').value = ''; $('party').value = '';
+  save(); renderAll();
+  window.scrollTo(0,0); $('tab-add').parentElement.scrollTop = 0;
+  $('save').disabled = false;
+  toast('Saved on this phone');
+  sync(false);
+}
+function resetFormDefaults(){
+  V.type = S.lastType === 'in' ? 'in' : 'out';
+  V.used = USED_FOR.includes(S.lastUsed) ? S.lastUsed : USED_FOR[0];
+  $('date').value = today();
+}
+
+/* ================= Wiring ================= */
+$('syncBtn').onclick = () => sync(true);
+$('gear').onclick = () => setTab('set');
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setType(b.dataset.t));
+$('itemChips').onclick = e => { const b = e.target.closest('[data-item]'); if (b) selectItem(b.dataset.item); };
+$('sizeChips').onclick = e => { const b = e.target.closest('[data-code]'); if (b){ V.code = b.dataset.code; renderForm(); $('qty').focus(); } };
+$('usedChips').onclick = e => { const b = e.target.closest('[data-used]'); if (b){ V.used = b.dataset.used; renderForm(); } };
+$('qty').oninput = updateAfter;
+$('minus').onclick = () => changeQty(-1);
+$('plus').onclick = () => changeQty(1);
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => changeQty(Number(b.dataset.add)));
+$('save').onclick = saveEntry;
+$('q').oninput = e => { V.q = e.target.value; renderList(); };
+document.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+  V.filter = c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x===c)));
+  renderList();
+});
+$('list').onclick = e => { const r = e.target.closest('.row'); if (r){ selectCode(r.dataset.code); setTab('add'); $('qty').focus(); } };
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+$('logList').onclick = e => {
+  const d = e.target.closest('[data-del]'); if (!d) return;
+  if (!confirm('Delete this entry from the phone? It will NOT be sent to the sheet.')) return;
+  S.queue = S.queue.filter(x => x.id !== d.dataset.del); save(); renderAll();
+};
+
+$('cfgSave').onclick = async () => {
+  let url = $('cfgUrl').value.trim(); const tok = $('cfgTok').value.trim(); const m = $('cfgMsg');
+  if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){ m.className='msg bad'; m.textContent='The link must start with https://script.google.com and end with /exec'; return; }
+  if (!tok){ m.className='msg bad'; m.textContent='Enter the password you set as SECRET in the script.'; return; }
+  S.cfg = {url, token:tok}; save();
+  m.className='msg'; m.textContent='Testing…'; $('cfgSave').disabled = true;
+  try{
+    const j = await callScript(null);
+    S.items = j.items; S.itemsAt = Date.now(); S.lastSync = Date.now(); S.lastError = '';
+    S.queue.forEach(e => { if (e.state==='synced') e.counted = true; });
+    save(); renderAll();
+    m.className='msg good'; m.textContent='Connected. ' + j.items.length + ' items loaded.';
+    sync(false);
+  }catch(e){ m.className='msg bad'; m.textContent = e.message; }
+  finally{ $('cfgSave').disabled = false; }
+};
+$('copyLink').onclick = async () => {
+  if (!configured()){ toast('Save your settings first'); return; }
+  const link = location.origin + location.pathname + '?url=' + encodeURIComponent(S.cfg.url) + '&token=' + encodeURIComponent(S.cfg.token);
+  try { await navigator.clipboard.writeText(link); toast('Link copied. Keep it private.'); }
+  catch(e){ prompt('Copy this link:', link); }
+};
+$('reload').onclick = async () => {
+  try{
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+    const keys = await caches.keys(); await Promise.all(keys.map(k => caches.delete(k)));
+  }catch(e){}
+  location.reload();
+};
+let deferred = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; });
+$('installBtn').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $('installBtn').hidden = true; };
+
+/* auto-sync triggers */
+window.addEventListener('online', () => sync(false));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible') sync(false); });
+setInterval(() => { renderStatus(); if (pendingCount() && !syncing) sync(false); }, 45000);
+
+/* setup link: ?url=...&token=... */
+(function(){
+  const p = new URLSearchParams(location.search);
+  if (p.get('url') && p.get('token')){
+    S.cfg = {url:p.get('url'), token:p.get('token')}; save();
+    history.replaceState(null, '', location.pathname);
+    setTimeout(() => toast('Connected to your sheet'), 400);
+  }
+})();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+resetFormDefaults();
+renderAll();
+if (!configured()) setTab('set');
+sync(false);
+</script>
+</body>
+</html>
